@@ -1,0 +1,43 @@
+Like { 
+    MatchObject = 
+        Args "=>" Content
+
+    Args =
+        "(" + ListOf<ident,","> ")" -- many
+        | ident -- one
+
+    Content = 
+        "{" ListOf<Clause, "|"> "}"
+
+    Clause = 
+        Pattern ">=" DoBlock 
+
+    Pattern = 
+        ValuePattern
+        | WildcardPattern
+        | VariablePattern
+        | ArrayPattern
+
+    VariablePattern = ident
+
+    ArrayPattern = "[" ListOf<ArrayInternal,","> "]"
+
+    ArrayInternal = 
+        "..." Pattern -- many
+        | Pattern
+
+    WildcardPattern = "_"
+
+    ValuePattern = 
+        number
+        | string
+
+    DoBlock = doBlock
+
+    ident = letter alnum*
+    number = digit+ ("." digit+)?
+    string = "\"" ("\\\"" | ~"\"" any)* "\""
+    endOfDo = "|" | "}"
+    doBlock = (~endOfDo any)* 
+}
+

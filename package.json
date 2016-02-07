@@ -1,0 +1,31 @@
+{
+  "name": "like",
+  "version": "1.0.0",
+  "description": "A pattern matching tool",
+  "main": "index.js",
+  "dependencies": {
+    "ohm-js": "^0.9.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-jshint": "^0.12.0",
+    "grunt-contrib-qunit": "^1.0.1",
+    "grunt-contrib-uglify": "^0.11.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-mocha": "git+https://github.com/jonbretman/grunt-mocha.git",
+    "lodash": "^4.2.1",
+    "mocha": "^2.4.5",
+    "qunitjs": "^1.21.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dsl"
+  ],
+  "author": "Christian Gram Kalhauge",
+  "license": "MIT"
+}

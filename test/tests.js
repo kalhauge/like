@@ -4,6 +4,43 @@
 
 var expect = chai.expect
 
+describe("compile", () => {
+
+  it("can make a fib series", () => {
+    var fib_ = compile((a, fib) => {
+        0 >= 1 
+      | 1 >= 1
+      | n >= fib(n - 1) + fib(n - 2)
+    });
+    function fib (n) { return fib_(n, fib); }
+    expect(fib(2)).to.equal(2);
+    expect(fib(3)).to.equal(3);
+    expect(fib(4)).to.equal(5);
+  });
+  it("can use recursive calls", () => {
+    var fib = compile(a => {
+        0 >= 1 
+      | 1 >= 1
+      | n >= rec(n - 1) + rec(n - 2)
+    });
+    console.log(fib);
+    expect(fib(2)).to.equal(2);
+    expect(fib(3)).to.equal(3);
+    expect(fib(4)).to.equal(5);
+  });
+  // it("can do zip of lists", () => {
+  //   var zip = compile((a, b) => {
+  //       [x, ...xs], [y, ...ys] >= _.concat([[x,y]], rec(xs, ys))
+  //     | []        , _          >= []
+  //     | _         , []         >= []
+  //   });
+  //   expect(zip([1,2], [3, 4])).to.equal([[1,2], [3,4]]);
+  //   expect(zip([1], [3, 4])).to.equal([[1,2]]);
+  //   expect(zip([1, 2], [3])).to.equal([[1,2]]);
+  // });
+
+});
+
 describe("transform", () => {
 
   it("should return a readable function", () => {
@@ -62,9 +99,9 @@ var x = function (a) {
   });
   it("should match rest", () => {
 var x = function (a) {
-  var x,y;
-  if ( a instanceof Array && a.length === 2 && (x = a[0] || true) && (y = a[1] || true) ) {
-    return x + y;
+  var x,xs;
+  if ( a instanceof Array && a.length >= 1 && (x = a[0] || true) && (xs = a.splice(1) || true) ) {
+    return xs;
   }
 }
     var str = transform((a) => { 
@@ -72,6 +109,7 @@ var x = function (a) {
     })
     console.log(x.toString()) 
     console.log(str)
+    expect(str).to.have.equal(x.toString());
   });
 });
 
@@ -100,6 +138,25 @@ describe("parse", () => {
   it("should parse a float match", () => {
     var ast = parse((a) => { 1.1 >= 0 })
     
+    expect(ast.clauses[0]).to.have.property("pattern")
+      .that.has.property("value", 1.1);
+  });
+  
+  it("should parse multible arguments", () => {
+    var ast = parse((a, b) => { 
+        1.1 >= 0 
+      | x >= 1
+    })
+    expect(ast.args).to.have.length(2);
+  });
+
+  it("should parse a multible patterns", () => {
+    var ast = parse((a) => { 
+        1.1 >= 0 
+      | x >= 1
+    })
+    
+    expect(ast.clauses).to.have.length(2);
     expect(ast.clauses[0]).to.have.property("pattern")
       .that.has.property("value", 1.1);
   });
@@ -149,7 +206,7 @@ describe("parse", () => {
         have.property("subpatterns").that.has.length(1);
       
       expect(ast.clauses[0].pattern.restpattern).to.
-        be.instanceof(RestArrayPattern)
+        be.instanceof(VariablePattern)
     });
 
     it("should parse the advanced rest construct", () => {

@@ -1,4 +1,10 @@
 
+function compile(fn) {
+  var rec, str = transform(fn)
+  console.log(str)
+  return eval("rec = " + str)
+}
+
 function transform(fn) {
   return parse(fn).trans("");
 }
@@ -17,7 +23,6 @@ addMethod("trans", class {
 
   MatchObject (indent) { 
     var freeVars = this.free();
-    console.log(freeVars);
     return indent + "function (" + this.args + ") {\n" + 
       (_.isEmpty(freeVars) ? "" : indent + "  var " + freeVars + ";\n") + 
       this.clauses.map(c => c.trans(indent + "  ", this.args)).join("") + 
@@ -41,11 +46,17 @@ addMethod("trans", class {
   ArrayPattern(indent, value) { 
     var clauses = [ 
       value + " instanceof Array",
-      value + ".length === " + this.subpatterns.length
+      value + ".length " + ( this.restpattern ? ">= " : "=== ")  + this.subpatterns.length
     ] 
     this.subpatterns.forEach((p, i) => {
       clauses.push("(" + p.trans(indent, value + "[" + i + "]") + ")") 
     });
+    if ( this.restpattern ) { 
+      clauses.push("(" + this.restpattern.trans(
+              indent, 
+              value + ".splice(" + this.subpatterns.length + ")") + 
+          ")") 
+    }
     return clauses.join(" && ");
   }
 });
@@ -55,7 +66,13 @@ addMethod("free", class {
   Clause () { return this.pattern.free() }
   ValuePattern () { return [] }
   VariablePattern () { return [this.name] }
-  ArrayPattern () { return _.flatten(this.subpatterns.map(p => p.free()))}
+  ArrayPattern () { 
+    var freeVars = this.subpatterns.map(p => p.free());
+    if ( this.restpattern) { 
+      freeVars.push(this.restpattern.free())
+    }
+    return _.flatten(freeVars);
+  }
   AST() { throw this.constructor.name + " has no free" }
 });
 
@@ -81,9 +98,10 @@ var sematics = g.semantics().addOperation("toAST", {
 
   ValuePattern: (x) => new ValuePattern(x.toAST()),
   VariablePattern: ident => new VariablePattern(ident.toAST()),
-  ArrayPattern: (_ob, subpatterns ,_cb) => new ArrayPattern(subpatterns.toAST()),
-
-  ArrayInternal_rest: (_dots, pattern) => new RestArrayPattern(pattern.toAST()),
+  ArrayPattern: (_ob, subpatterns, _c, _dots, rest, _cb) => {
+    var restpattern = rest.toAST();
+    return new ArrayPattern(subpatterns.toAST(), _.isEmpty(restpattern) ? null : restpattern[0])
+  },
 
   number: function (numbers, s, numbers2) { return parseFloat(this.interval.contents)},
 

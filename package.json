@@ -15,6 +15,7 @@
     "grunt-contrib-qunit": "^1.0.1",
     "grunt-contrib-uglify": "^0.11.1",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-exec": "^0.4.6",
     "grunt-mocha": "git+https://github.com/jonbretman/grunt-mocha.git",
     "lodash": "^4.2.1",
     "mocha": "^2.4.5",

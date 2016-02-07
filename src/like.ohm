@@ -23,7 +23,7 @@ Like {
     ArrayPattern = "[" ListOf<ArrayInternal,","> "]"
 
     ArrayInternal = 
-        "..." Pattern -- many
+        "..." Pattern -- rest
         | Pattern
 
     WildcardPattern = "_"

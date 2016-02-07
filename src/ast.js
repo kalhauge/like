@@ -5,9 +5,9 @@ class AST {
 }
 
 class MatchObject extends AST { 
-  constructor(matchArgs, clauses) {
+  constructor(args, clauses) {
     super();
-    this.matchArgs = matchArgs;
+    this.args = args;
     this.clauses = clauses;
   }
 }
@@ -20,8 +20,9 @@ class Clause extends AST {
   }
 }
 
-class Pattern { 
+class Pattern extends AST{ 
   constructor() {
+    super();
   }
 }
 
@@ -40,9 +41,10 @@ class VariablePattern extends Pattern {
 }
 
 class ArrayPattern extends Pattern { 
-  constructor(subpatterns) {
+  constructor(subpatterns, restpattern) {
 		super();
 		this.subpatterns = subpatterns;
+		this.restpattern = restpattern;
   }
 }
 

@@ -4,27 +4,14 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg : grunt.file.readJSON("package.json"),
-    jshint: {
-      options: {
-        eqeqeq: true,
-        esversion: 6,
-        trailing: true
-      },
-      target: {
-        src : ["src/**/*.js", "test/**/*.js"]
-      }
-    },
-    
     watch: {
       files: ["src/**/*.js", "test/**/*.js", "src/**/*.ohm"],
-      tasks: ["default"],
+      tasks: ["default", "exec:refresh_browser"],
       options: {
         spawn: false,
         livereload: true,
       },
     },
-
-
     concat: {
       options: {
         banner: bannerContent,
@@ -45,8 +32,6 @@ module.exports = function(grunt) {
         dest : "distrib/" + name + ".js"
       }
     },
-    
-
     uglify: {
       options: {
         // banner: bannerContent,
@@ -55,8 +40,13 @@ module.exports = function(grunt) {
         sourceMapUrl: name+".min.js.map"
       },
       target : {
-        src : ["src/**/*.js"],
+        src : ["src/like.ohm", "src/**/*.js"],
         dest : "distrib/" + name + ".min.js"
+      }
+    },
+    exec: {
+      refresh_browser: {
+        command: "osascript ~/Desktop/refresh.scpt"
       }
     },
     mocha: {
@@ -74,6 +64,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-concat");
   grunt.loadNpmTasks("grunt-mocha");
+  grunt.loadNpmTasks("grunt-exec");
 
   grunt.registerTask("default", ["concat"]);
 };

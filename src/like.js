@@ -30,7 +30,8 @@ addMethod("trans", class {
   }
 
   Clause (indent, args) {
-    return indent + "if ( " + this.pattern.trans("", args[0]) + " ) {\n" + 
+    if (this.pattern.length > args.length) throw "Expected at least " + this.pattern.length + " arguements, but got " + args.length;
+    return indent + "if ( " + this.pattern.map((p,i) => "(" + p.trans("", args[i]) + ")").join(" && ") + " ) {\n" + 
       indent + "  return " + this.doBlock + ";\n" + 
       indent + "}\n" ;
   }
@@ -41,6 +42,10 @@ addMethod("trans", class {
 
   VariablePattern(indent, value) {
     return this.name + " = " + value + " || true";
+  }
+
+  WildcardPattern(indent, value) {
+    return "true";
   }
 
   ArrayPattern(indent, value) { 
@@ -63,7 +68,7 @@ addMethod("trans", class {
 
 addMethod("free", class { 
   MatchObject () { return _.uniq(_.flatten(this.clauses.map(c => c.free()))) }
-  Clause () { return this.pattern.free() }
+  Clause () { return _.flatten(this.pattern.map(p => p.free())) }
   ValuePattern () { return [] }
   VariablePattern () { return [this.name] }
   ArrayPattern () { 
@@ -73,6 +78,7 @@ addMethod("free", class {
     }
     return _.flatten(freeVars);
   }
+  WildcardPattern () { return [] }
   AST() { throw this.constructor.name + " has no free" }
 });
 
@@ -97,6 +103,7 @@ var sematics = g.semantics().addOperation("toAST", {
   Clause: (pattern, _arw, doBlock) => new Clause(pattern.toAST(), doBlock.toAST()),
 
   ValuePattern: (x) => new ValuePattern(x.toAST()),
+  WildcardPattern: (_us) => new WildcardPattern(),
   VariablePattern: ident => new VariablePattern(ident.toAST()),
   ArrayPattern: (_ob, subpatterns, _c, _dots, rest, _cb) => {
     var restpattern = rest.toAST();

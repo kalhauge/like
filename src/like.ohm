@@ -10,7 +10,7 @@ Like {
         "{" ListOf<Clause, "|"> "}"
 
     Clause = 
-        Pattern ">=" DoBlock 
+        ListOf<Pattern, ","> ">=" DoBlock 
 
     Pattern = 
         ValuePattern

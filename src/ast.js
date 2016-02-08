@@ -40,6 +40,12 @@ class VariablePattern extends Pattern {
   }
 }
 
+class WildcardPattern extends Pattern { 
+  constructor() {
+		super();
+  }
+}
+
 class ArrayPattern extends Pattern { 
   constructor(subpatterns, restpattern) {
 		super();

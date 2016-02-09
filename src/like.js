@@ -57,10 +57,12 @@ addMethod("trans", class {
       clauses.push("(" + p.trans(indent, value + "[" + i + "]") + ")") 
     });
     if ( this.restpattern ) { 
-      clauses.push("(" + this.restpattern.trans(
-              indent, 
-              value + ".splice(" + this.subpatterns.length + ")") + 
-          ")") 
+      clauses.push("(" + 
+        this.restpattern.trans(
+          indent, 
+          value + ".splice(" + this.subpatterns.length + ")"
+        ) + 
+      ")") 
     }
     return clauses.join(" && ");
   }
@@ -105,9 +107,13 @@ var sematics = g.semantics().addOperation("toAST", {
   ValuePattern: (x) => new ValuePattern(x.toAST()),
   WildcardPattern: (_us) => new WildcardPattern(),
   VariablePattern: ident => new VariablePattern(ident.toAST()),
-  ArrayPattern: (_ob, subpatterns, _c, _dots, rest, _cb) => {
+  ArrayPattern_concrete: (_ob, subpatterns, _c, _dots, rest, _cb) => {
     var restpattern = rest.toAST();
     return new ArrayPattern(subpatterns.toAST(), _.isEmpty(restpattern) ? null : restpattern[0])
+  },
+  ArrayPattern_many: (_ob, _dots, rest, _cb) => {
+    var restpattern = rest.toAST();
+    return new ArrayPattern([], restpattern)
   },
 
   number: function (numbers, s, numbers2) { return parseFloat(this.interval.contents)},

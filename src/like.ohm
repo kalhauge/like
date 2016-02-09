@@ -20,7 +20,9 @@ Like {
 
     VariablePattern = ident
 
-    ArrayPattern = "[" ListOf<Pattern,","> ("," "..." Pattern)? "]"
+    ArrayPattern = 
+        "[" ListOf<Pattern,","> ("," "..." Pattern)? "]" -- concrete
+        | "[" "..." Pattern "]"                            -- many
 
     WildcardPattern = "_"
 

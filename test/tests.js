@@ -38,6 +38,30 @@ describe("compile", () => {
     expect(zip([1], [3, 4])).to.eql([[1,3]]);
     expect(zip([1, 2], [3])).to.eql([[1,3]]);
   });
+  it("do match on many twoes", () => {
+    var twoes = compile(a => {
+        [...2] >= true
+      | _      >= false
+    });
+    expect(twoes([2, 2, 2])).to.equal(true, twoes.toString());
+    expect(twoes([2, 1, 2])).to.equal(false, twoes.toString());
+  });
+  
+  it("do match on first 1 and then 2s", () => {
+    var twoes = compile(a => {
+       [1, ...2] >= true
+      | _        >= false
+    });
+    expect(twoes([2, 2, 2])).to.equal(true);
+    expect(twoes([2, 1, 2])).to.equal(false);
+  });
+  
+  it("do match recusive many arrays", () => {
+    var transpose = compile(a => {
+        [...[xs, ys]] >= [xs, ys]
+    });
+    expect(transpose([[1,2], [1, 2], [1, 2]])).to.eql([[1,1,1], [2,2,2]]);
+  });
 
 });
 
@@ -258,6 +282,15 @@ describe("parse", () => {
       expect(ast.clauses[0].pattern[0].restpattern).to.
         be.instanceof(ValuePattern)
     });
+  
+    it("should all pattern", () => {
+      var ast = parse((a) => { [...2] >= x })
+      expect(ast.clauses[0].pattern[0].subpatterns).to.
+        have.length(0)
+      expect(ast.clauses[0].pattern[0].restpattern).to.
+        be.instanceof(ValuePattern)
+    });
   });
+
 });
 

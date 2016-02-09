@@ -14,39 +14,35 @@ module.exports = function(grunt) {
     },
     concat: {
       options: {
-        banner: bannerContent,
         process: function(src, filepath) {
           if ( filepath.substr(-3) === "ohm") {
-            return "var " + filepath.match(/([^\/]*)$/)[1].replace(/\./,"_") + " = " + 
-              "'" +  
+            return "module.exports = '" +  
               src.replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\r\n|\r|\n/g, "\\n") +
-              "'" + 
-              "\n";
+              "'\n";
           } else {
             return '// Source: ' + filepath + '\n' + src
           }
         },
       },
       target : {
-        src : ["src/like.ohm", "src/**/*.js"],
-        dest : "distrib/" + name + ".js"
-      }
-    },
-    uglify: {
-      options: {
-        // banner: bannerContent,
-        sourceMapRoot: "../",
-        sourceMap: "distrib/"+name+".min.js.map",
-        sourceMapUrl: name+".min.js.map"
-      },
-      target : {
-        src : ["src/like.ohm", "src/**/*.js"],
-        dest : "distrib/" + name + ".min.js"
+        src: ["src/like.ohm"],
+        dest: "gen/like.ohm.js"
       }
     },
     exec: {
       refresh_browser: {
         command: "osascript ~/Desktop/refresh.scpt"
+      }
+    },
+    browserify: {
+      target: {
+        src: ['src/like.js'],
+        dest: "dist/" + name + ".js"
+      },
+      options: { 
+        browserifyOptions: {
+          standalone: "like",
+        }
       }
     },
     mocha: {
@@ -60,11 +56,10 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks("grunt-contrib-watch");
-  grunt.loadNpmTasks("grunt-contrib-jshint");
-  grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-concat");
   grunt.loadNpmTasks("grunt-mocha");
   grunt.loadNpmTasks("grunt-exec");
+  grunt.loadNpmTasks('grunt-browserify');
 
-  grunt.registerTask("default", ["concat"]);
+  grunt.registerTask("default", ["concat", "browserify"]);
 };

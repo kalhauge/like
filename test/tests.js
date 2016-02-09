@@ -3,6 +3,7 @@
 // var expect = require('chai').expect,
 
 var expect = chai.expect
+var compile = like.compile, parse = like.parse, translate = like.translate
 
 describe("compile", () => {
 
@@ -65,10 +66,10 @@ describe("compile", () => {
 
 });
 
-describe("transform", () => {
+describe("translate", () => {
   
   it("should match the wildcard", () => {
-    var str = transform((a) => { _ >= 0 } )
+    var str = translate((a) => { _ >= 0 } )
 
 var x = function (a) {
   if ( (true) ) {
@@ -79,7 +80,7 @@ var x = function (a) {
   });
 
   it("should return a readable function", () => {
-    var str = transform((a) => { 1 >= 0 } )
+    var str = translate((a) => { 1 >= 0 } )
 
 var x = function (a) {
   if ( (a === 1) ) {
@@ -90,7 +91,7 @@ var x = function (a) {
   });
   
   it("should accept multible clauses", () => {
-    var str = transform((a) => { 
+    var str = translate((a) => { 
         1 >= 0 
       | 2 >= 2
     } )
@@ -107,7 +108,7 @@ var x = function (a) {
   });
 
   it("should manage vaiables", () => {
-    var str = transform((a) => { 
+    var str = translate((a) => { 
         x >= x + 2
     } )
 
@@ -127,7 +128,7 @@ var x = function (a) {
     return x + y;
   }
 }
-    var str = transform((a) => { 
+    var str = translate((a) => { 
         [x, y] >= x + y
     } )
     expect(str).to.have.equal(x.toString());
@@ -140,7 +141,7 @@ var x = function (a) {
     return xs;
   }
 }
-    var str = transform((a) => { 
+    var str = translate((a) => { 
         [x, ...xs] >= xs
     })
     console.log(x.toString()) 
@@ -155,7 +156,7 @@ var x = function (a,b) {
     return x + y;
   }
 }    
-    var str = transform((a, b) => { 
+    var str = translate((a, b) => { 
         x, y >= x + y
     })
     console.log(x.toString()) 

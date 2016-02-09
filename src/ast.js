@@ -1,10 +1,20 @@
 // This file contains the ast for holding the matchers files.
+"use strict";
 
-class AST { 
+function addMethod(name, cls) {
+  Object.getOwnPropertyNames(cls.prototype).forEach(fname => {
+    if (name === "constructor") return;
+    exports[fname].prototype[name] = cls.prototype[fname];
+  });
+}
+
+exports.addMethod = addMethod;
+
+var AST = exports.AST = class AST { 
   constructor() { }
 }
 
-class MatchObject extends AST { 
+exports.MatchObject = class MatchObject extends AST { 
   constructor(args, clauses) {
     super();
     this.args = args;
@@ -12,45 +22,44 @@ class MatchObject extends AST {
   }
 }
 
-class Clause extends AST { 
+exports.Clause = class Clause extends AST { 
   constructor(pattern, doBlock) {
-		super();
-		this.pattern = pattern;
-		this.doBlock = doBlock;
+    super();
+    this.pattern = pattern;
+    this.doBlock = doBlock;
   }
 }
 
-class Pattern extends AST{ 
+var Pattern = exports.Pattern = class Pattern extends AST{ 
   constructor() {
     super();
   }
 }
 
-class ValuePattern extends Pattern { 
+exports.ValuePattern = class ValuePattern extends Pattern { 
   constructor(value) {
-		super();
-		this.value = value;
+    super();
+    this.value = value;
   }
 }
 
-class VariablePattern extends Pattern { 
+exports.VariablePattern = class VariablePattern extends Pattern { 
   constructor(name) {
-		super();
-		this.name = name;
+    super();
+    this.name = name;
   }
 }
 
-class WildcardPattern extends Pattern { 
+exports.WildcardPattern = class WildcardPattern extends Pattern { 
   constructor() {
-		super();
+    super();
   }
 }
 
-class ArrayPattern extends Pattern { 
+exports.ArrayPattern = class ArrayPattern extends Pattern { 
   constructor(subpatterns, restpattern) {
-		super();
-		this.subpatterns = subpatterns;
-		this.restpattern = restpattern;
+    super();
+    this.subpatterns = subpatterns;
+    this.restpattern = restpattern;
   }
 }
-

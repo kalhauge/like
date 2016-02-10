@@ -3,7 +3,8 @@
 // var expect = require('chai').expect,
 
 var expect = chai.expect
-var compile = like.compile, parse = like.parse, translate = like.translate
+var compile = like.compile, parse = like.parse, translate = like.translate;
+var ast = like.ast;
 
 describe("compile", () => {
 
@@ -171,16 +172,16 @@ describe("parse", () => {
     var ast = parse((a) => {
       10 >= 2
     });
-    expect(ast).to.be.an.instanceof(MatchObject);
+    expect(ast).to.be.an.instanceof(ast.MatchObject);
     expect(ast).to.have.property("args").eql(["a"])
     expect(ast).to.have.property("clauses").with.length(1)
 
     expect(ast).to.have.property("clauses")
       .with.deep.property("[0]")
-        .that.is.a.instanceof(Clause)
+        .that.is.a.instanceof(ast.Clause)
     
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
-      .that.is.a.instanceof(ValuePattern);
+      .that.is.a.instanceof(ast.ValuePattern);
     
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
       .that.has.property("value", 10);
@@ -233,7 +234,7 @@ describe("parse", () => {
   it("should parse a wildcard", () => {
     var ast = parse((a) => { _ >= 0 })
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
-      .that.is.an.instanceof(WildcardPattern)
+      .that.is.an.instanceof(ast.WildcardPattern)
   });
   
   it("should parse a string match with escapes", () => {
@@ -246,7 +247,7 @@ describe("parse", () => {
     var ast = parse((a) => { x >= x })
     
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
-      .that.is.a.instanceof(VariablePattern);
+      .that.is.a.instanceof(ast.VariablePattern);
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
       .that.has.property("name", "x");
   });
@@ -256,7 +257,7 @@ describe("parse", () => {
       var ast = parse((a) => { [] >= x })
     
       expect(ast.clauses[0].pattern[0]).to.
-        be.an.instanceof(ArrayPattern);
+        be.an.instanceof(ast.ArrayPattern);
 
       expect(ast.clauses[0].pattern[0]).to.
         have.property("subpatterns").that.is.empty;
@@ -275,13 +276,13 @@ describe("parse", () => {
         have.property("subpatterns").that.has.length(1);
       
       expect(ast.clauses[0].pattern[0].restpattern).to.
-        be.instanceof(VariablePattern)
+        be.instanceof(ast.VariablePattern)
     });
 
     it("should parse the advanced rest construct", () => {
       var ast = parse((a) => { [x, ...2] >= x })
       expect(ast.clauses[0].pattern[0].restpattern).to.
-        be.instanceof(ValuePattern)
+        be.instanceof(ast.ValuePattern)
     });
   
     it("should all pattern", () => {
@@ -289,7 +290,7 @@ describe("parse", () => {
       expect(ast.clauses[0].pattern[0].subpatterns).to.
         have.length(0)
       expect(ast.clauses[0].pattern[0].restpattern).to.
-        be.instanceof(ValuePattern)
+        be.instanceof(ast.ValuePattern)
     });
   });
 

@@ -1,20 +1,25 @@
 // This file contains the ast for holding the matchers files.
 "use strict";
 
+var ast = {};
+
 function addMethod(name, cls) {
   Object.getOwnPropertyNames(cls.prototype).forEach(fname => {
-    if (name === "constructor") return;
-    exports[fname].prototype[name] = cls.prototype[fname];
+    if (fname === "constructor") return;
+    ast[fname].prototype[name] = cls.prototype[fname];
   });
 }
 
-exports.addMethod = addMethod;
+ast.addMethod = addMethod;
 
-var AST = exports.AST = class AST { 
-  constructor() { }
+ast.AST = class AST extends Object{ 
+  constructor() {
+    super(); 
+  }
 }
+var AST = ast.AST;
 
-exports.MatchObject = class MatchObject extends AST { 
+ast.MatchObject = class MatchObject extends AST { 
   constructor(args, clauses) {
     super();
     this.args = args;
@@ -22,7 +27,7 @@ exports.MatchObject = class MatchObject extends AST {
   }
 }
 
-exports.Clause = class Clause extends AST { 
+ast.Clause = class Clause extends AST { 
   constructor(pattern, doBlock) {
     super();
     this.pattern = pattern;
@@ -30,36 +35,38 @@ exports.Clause = class Clause extends AST {
   }
 }
 
-var Pattern = exports.Pattern = class Pattern extends AST{ 
+var Pattern = ast.Pattern = class Pattern extends AST{ 
   constructor() {
     super();
   }
 }
 
-exports.ValuePattern = class ValuePattern extends Pattern { 
+ast.ValuePattern = class ValuePattern extends Pattern { 
   constructor(value) {
     super();
     this.value = value;
   }
 }
 
-exports.VariablePattern = class VariablePattern extends Pattern { 
+ast.VariablePattern = class VariablePattern extends Pattern { 
   constructor(name) {
     super();
     this.name = name;
   }
 }
 
-exports.WildcardPattern = class WildcardPattern extends Pattern { 
+ast.WildcardPattern = class WildcardPattern extends Pattern { 
   constructor() {
     super();
   }
 }
 
-exports.ArrayPattern = class ArrayPattern extends Pattern { 
+ast.ArrayPattern = class ArrayPattern extends Pattern { 
   constructor(subpatterns, restpattern) {
     super();
     this.subpatterns = subpatterns;
     this.restpattern = restpattern;
   }
 }
+
+module.exports = ast;

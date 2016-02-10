@@ -4,7 +4,7 @@
 
 var expect = chai.expect
 var compile = like.compile, parse = like.parse, translate = like.translate;
-var ast = like.ast;
+var asts = like.ast;
 
 describe("compile", () => {
 
@@ -67,10 +67,14 @@ describe("compile", () => {
 
 });
 
+function trans (fn) { 
+  return translate(parse(fn))
+}
+
 describe("translate", () => {
   
   it("should match the wildcard", () => {
-    var str = translate((a) => { _ >= 0 } )
+    var str = trans((a) => { _ >= 0 } )
 
 var x = function (a) {
   if ( (true) ) {
@@ -81,7 +85,7 @@ var x = function (a) {
   });
 
   it("should return a readable function", () => {
-    var str = translate((a) => { 1 >= 0 } )
+    var str = trans((a) => { 1 >= 0 } )
 
 var x = function (a) {
   if ( (a === 1) ) {
@@ -92,7 +96,7 @@ var x = function (a) {
   });
   
   it("should accept multible clauses", () => {
-    var str = translate((a) => { 
+    var str = trans((a) => { 
         1 >= 0 
       | 2 >= 2
     } )
@@ -109,7 +113,7 @@ var x = function (a) {
   });
 
   it("should manage vaiables", () => {
-    var str = translate((a) => { 
+    var str = trans((a) => { 
         x >= x + 2
     } )
 
@@ -129,7 +133,7 @@ var x = function (a) {
     return x + y;
   }
 }
-    var str = translate((a) => { 
+    var str = trans((a) => { 
         [x, y] >= x + y
     } )
     expect(str).to.have.equal(x.toString());
@@ -142,7 +146,7 @@ var x = function (a) {
     return xs;
   }
 }
-    var str = translate((a) => { 
+    var str = trans((a) => { 
         [x, ...xs] >= xs
     })
     console.log(x.toString()) 
@@ -157,7 +161,7 @@ var x = function (a,b) {
     return x + y;
   }
 }    
-    var str = translate((a, b) => { 
+    var str = trans((a, b) => { 
         x, y >= x + y
     })
     console.log(x.toString()) 
@@ -172,16 +176,16 @@ describe("parse", () => {
     var ast = parse((a) => {
       10 >= 2
     });
-    expect(ast).to.be.an.instanceof(ast.MatchObject);
+    expect(ast).to.be.an.instanceof(asts.MatchObject);
     expect(ast).to.have.property("args").eql(["a"])
     expect(ast).to.have.property("clauses").with.length(1)
 
     expect(ast).to.have.property("clauses")
       .with.deep.property("[0]")
-        .that.is.a.instanceof(ast.Clause)
+        .that.is.a.instanceof(asts.Clause)
     
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
-      .that.is.a.instanceof(ast.ValuePattern);
+      .that.is.a.instanceof(asts.ValuePattern);
     
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
       .that.has.property("value", 10);
@@ -234,7 +238,7 @@ describe("parse", () => {
   it("should parse a wildcard", () => {
     var ast = parse((a) => { _ >= 0 })
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
-      .that.is.an.instanceof(ast.WildcardPattern)
+      .that.is.an.instanceof(asts.WildcardPattern)
   });
   
   it("should parse a string match with escapes", () => {
@@ -247,7 +251,7 @@ describe("parse", () => {
     var ast = parse((a) => { x >= x })
     
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
-      .that.is.a.instanceof(ast.VariablePattern);
+      .that.is.a.instanceof(asts.VariablePattern);
     expect(ast.clauses[0]).to.have.deep.property("pattern[0]")
       .that.has.property("name", "x");
   });
@@ -257,7 +261,7 @@ describe("parse", () => {
       var ast = parse((a) => { [] >= x })
     
       expect(ast.clauses[0].pattern[0]).to.
-        be.an.instanceof(ast.ArrayPattern);
+        be.an.instanceof(asts.ArrayPattern);
 
       expect(ast.clauses[0].pattern[0]).to.
         have.property("subpatterns").that.is.empty;
@@ -276,13 +280,13 @@ describe("parse", () => {
         have.property("subpatterns").that.has.length(1);
       
       expect(ast.clauses[0].pattern[0].restpattern).to.
-        be.instanceof(ast.VariablePattern)
+        be.instanceof(asts.VariablePattern)
     });
 
     it("should parse the advanced rest construct", () => {
       var ast = parse((a) => { [x, ...2] >= x })
       expect(ast.clauses[0].pattern[0].restpattern).to.
-        be.instanceof(ast.ValuePattern)
+        be.instanceof(asts.ValuePattern)
     });
   
     it("should all pattern", () => {
@@ -290,7 +294,7 @@ describe("parse", () => {
       expect(ast.clauses[0].pattern[0].subpatterns).to.
         have.length(0)
       expect(ast.clauses[0].pattern[0].restpattern).to.
-        be.instanceof(ast.ValuePattern)
+        be.instanceof(asts.ValuePattern)
     });
   });
 

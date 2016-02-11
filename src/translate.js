@@ -2,12 +2,15 @@
 
 var ast = require("./ast.js");
 var _ = require("lodash");
+var utils = require('./utils.js');
+var matchtree = require("./matchtree.js");
 
 function translate(ast) {
-  return ast.trans("");
+  var tree = matchtree.toMatchTree(ast); 
+  return tree;
 }
 
-ast.addMethod("trans", class {
+var trans = utils.createMethod(ast, class {
   AST (indent) { 
     throw (this.constructor.name + " not defined for trans")
   }
@@ -58,21 +61,4 @@ ast.addMethod("trans", class {
     return clauses.join(" && ");
   }
 });
-
-ast.addMethod("free", class { 
-  MatchObject () { return _.uniq(_.flatten(this.clauses.map(c => c.free()))) }
-  Clause () { return _.flatten(this.pattern.map(p => p.free())) }
-  ValuePattern () { return [] }
-  VariablePattern () { return [this.name] }
-  ArrayPattern () { 
-    var freeVars = this.subpatterns.map(p => p.free());
-    if ( this.restpattern) { 
-      freeVars.push(this.restpattern.free())
-    }
-    return _.flatten(freeVars);
-  }
-  WildcardPattern () { return [] }
-  AST() { throw this.constructor.name + " has no free" }
-});
-
 module.exports = translate;

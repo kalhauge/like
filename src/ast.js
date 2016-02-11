@@ -3,15 +3,6 @@
 
 var ast = {};
 
-function addMethod(name, cls) {
-  Object.getOwnPropertyNames(cls.prototype).forEach(fname => {
-    if (fname === "constructor") return;
-    ast[fname].prototype[name] = cls.prototype[fname];
-  });
-}
-
-ast.addMethod = addMethod;
-
 ast.AST = class AST extends Object{ 
   constructor() {
     super(); 

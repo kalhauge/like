@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     pkg : grunt.file.readJSON("package.json"),
     watch: {
       files: ["src/**/*.js", "test/**/*.js", "src/**/*.ohm"],
-      tasks: ["default", "exec:refresh_browser"],
+      tasks: ["exec:mocha"],
       options: {
         spawn: false,
         livereload: true,
@@ -32,6 +32,9 @@ module.exports = function(grunt) {
     exec: {
       refresh_browser: {
         command: "osascript ~/Desktop/refresh.scpt"
+      },
+      mocha: {
+        command: "mocha --harmony"
       }
     },
     browserify: {

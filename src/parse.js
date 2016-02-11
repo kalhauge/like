@@ -3,6 +3,7 @@
 var ohm = require("ohm-js");
 var ast = require("./ast.js");
 var like_ohm = require("../gen/like.ohm.js");
+var _ = require("lodash");
 
 function parse(fn) {
   var string = fn.toString();

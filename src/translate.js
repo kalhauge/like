@@ -1,6 +1,7 @@
 "use strict";
 
 var ast = require("./ast.js");
+var _ = require("lodash");
 
 function translate(ast) {
   return ast.trans("");

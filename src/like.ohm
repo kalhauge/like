@@ -32,7 +32,7 @@ Like {
 
     DoBlock = doBlock
 
-    ident = letter alnum*
+    ident = ("_" | "$" | letter) alnum*
     number = digit+ ("." digit+)?
     string = "\"" ("\\\"" | ~"\"" any)* "\""
     endOfDo = "|" | "}"

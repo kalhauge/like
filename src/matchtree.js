@@ -31,9 +31,8 @@ var tree = {
     this.target = target;
   },
 
-  LET: function LET (name, is, in_) {
-    this.name = name;
-    this.is = is;
+  LET: function LET (env, in_) {
+    this.env = env;
     this.in_ = in_;
   },
 
@@ -59,7 +58,7 @@ var tree = {
 }
 exports.tree = tree
 
-function and (first, then) { return new tree.AND(first, then) }
+function and (first, then) { return new tree.AND([first], then) }
 function or (first, then) { return new tree.OR(first, then) }
 
 
@@ -88,12 +87,11 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
   }
 
   VariablePattern (arg, next) {
-    return new tree.LET(this.name, arg, next);
+    var env = {}; env[this.name] = arg;
+    return new tree.LET(env, next);
   }
 
   ArrayPattern (arg, next) {
-    var length = "_like1"
-    var restit = "_like_it1"
     var sub = next;
     let len = this.subpatterns.length;
     
@@ -104,7 +102,7 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
         freevars,
         toMatchTree(
           this.restpattern,
-          restit, 
+          "_e", 
           new tree.UPDATE(freevars)
         ),
         sub
@@ -117,11 +115,9 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
     );
     return and(
         new tree.INSTOF(arg, "Array"),
-        new tree.LET(length, arg + ".length", 
-          and(
-            new tree.GTE(length, this.subpatterns.length),
-            sub
-          )
+        and(
+          new tree.GTE(arg + ".length", this.subpatterns.length),
+          sub
         )
     )
   }
@@ -129,11 +125,11 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
 
 var free = utils.createMethod(ast, class { 
   MatchObject () { return _.uniq(_.flatten(this.clauses.map(c => c.free()))) }
-  Clause () { return _.flatten(this.pattern.map(p => p.free())) }
+  Clause () { return _.flatten(this.pattern.map(free)) }
   ValuePattern () { return [] }
   VariablePattern () { return [this.name] }
   ArrayPattern () { 
-    var freeVars = this.subpatterns.map(p => p.free());
+    var freeVars = this.subpatterns.map(free);
     if ( this.restpattern) { 
       freeVars.push(this.restpattern.free())
     }

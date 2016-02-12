@@ -55,6 +55,16 @@ describe("compile", () => {
     expect(twoes([2, 1, 2])).to.equal(false);
   });
   
+  it("matches everything in an array", () => {
+    var array = compile(a => {
+        [..._] >= true
+      | _      >= false
+    });
+    expect(array([1, 2, 3])).to.equal(true, pp(array));
+    expect(array([2, 1, "a"])).to.equal(true);
+    expect(array(false)).to.equal(false, pp(array));
+  });
+  
   it("matches on first 1 and then 2s", () => {
     var twoes = compile(a => {
        [1, ...2] >= true

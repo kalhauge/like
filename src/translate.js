@@ -165,12 +165,14 @@ var optimize = utils.createMethod(matchtree.tree, class {
     var all = optimize(this.all);
     var in_ = optimize(this.in_);
     // pure assignment
-    if (this.free.length == 1 && all instanceof tt.LET) {
+    if (this.free.length === 1 && all instanceof tt.LET) {
       let env = {}; env[this.free[0]] = "_e";
       if (_.isEqual(all.env, env)) { 
         let env = {}; env[this.free[0]] = this.array; 
         return optimize(new tt.LET(env, in_))
       }
+    } else if (this.free.length === 0 && all instanceof tt.UPDATE) { 
+      return in_;
     }
     return new tt.ALL(this.array, this.free, all, in_);
   }

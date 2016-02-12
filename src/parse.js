@@ -37,6 +37,9 @@ var sematics = g.semantics().addOperation("toAST", {
     var restpattern = rest.toAST();
     return new ast.ArrayPattern([], restpattern)
   },
+  DatumPattern: (name, _lp, args, _rp) => {
+    return new ast.DatumPattern(name.toAST(), args.toAST()) 
+  },
 
   number: function (numbers, s, numbers2) { return parseFloat(this.interval.contents)},
 

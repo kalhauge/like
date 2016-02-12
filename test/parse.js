@@ -131,6 +131,16 @@ describe("parse", () => {
       expect(ast.clauses[0].pattern[0].restpattern).to.
         be.instanceof(asts.ValuePattern)
     });
+
+    it("should parse a datum", () => {
+      var ast = parse(a => {
+        Point(x_, y_) >= x_
+      });
+      var x = ast.clauses[0].pattern[0]
+      expect(x).to.be.instanceof(asts.DatumPattern);
+      expect(x).to.has.property("name", "Point");
+      expect(x).to.has.property("args").to.eql(["x_", "y_"]);
+    });
   });
 });
 

@@ -80,6 +80,26 @@ describe("compile", () => {
     });
     expect(transpose([[1,2], [1, 2], [1, 2]])).to.eql([[1,1,1], [2,2,2]], pp(transpose));
   });
+  
+  it("matches double recusive", () => {
+    var transpose = compile(a => {
+        [...[xs, ...ys]] >= [xs, ys]
+    });
+    expect(transpose([[1,2], [1, 2], [1, 2]])).to.eql([[1,1,1], [[2],[2],[2]]], pp(transpose));
+  });
+  
+  it("matches datums", () => {
+    var getx = compile(a => {
+        Point(x1, y1) >= x1 
+      | _ >= 0
+    });
+    function Point(x, y) {
+      this.x = x;
+      this.y = y;
+    };
+    expect(getx(new Point(2, 3))).to.equal(2, pp(getx));
+    expect(getx({x: 2, y:3})).to.equal(0, pp(getx));
+  });
 
 });
 

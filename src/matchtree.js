@@ -91,6 +91,22 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
     return new tree.LET(env, next);
   }
 
+  DatumPattern (arg, next) { 
+    return new tree.AND([
+        new tree.INSTOF(arg, "Object"),
+        new tree.EQ("\"" + this.name + "\"", arg + ".constructor.name"),
+        new tree.EQ(this.args.length, arg + ".constructor.length")
+      ], 
+      new tree.LET(
+        {_args: "_arguments(" + arg + ")"}, 
+        new tree.LET(
+          _.fromPairs(this.args.map((a, i) => [a, "_args[" + i + "]"]))
+          , next
+          )
+        )
+      );
+  }
+
   ArrayPattern (arg, next) {
     var sub = next;
     let len = this.subpatterns.length;
@@ -131,7 +147,7 @@ var free = utils.createMethod(ast, class {
   ArrayPattern () { 
     var freeVars = this.subpatterns.map(free);
     if ( this.restpattern) { 
-      freeVars.push(this.restpattern.free())
+      freeVars.push(free(this.restpattern))
     }
     return _.flatten(freeVars);
   }

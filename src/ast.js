@@ -60,4 +60,12 @@ ast.ArrayPattern = class ArrayPattern extends Pattern {
   }
 }
 
+ast.DatumPattern = class DatumPattern extends Pattern { 
+  constructor(name, args) {
+    super();
+    this.name = name;
+    this.args = args;
+  }
+}
+
 module.exports = ast;

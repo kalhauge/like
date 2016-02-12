@@ -179,9 +179,9 @@ var optimize = utils.createMethod(matchtree.tree, class {
 
   LET () { 
     let in_ = optimize(this.in_);
-    if (in_ instanceof tt.LET) {
-      return optimize(new tt.LET(_.assign({}, this.env, in_.env), in_.in_));
-    } 
+    //if (in_ instanceof tt.LET) {
+    //  return optimize(new tt.LET(_.assign({}, this.env, in_.env), in_.in_));
+    //} 
     return new tt.LET(this.env, in_); 
   }
   UPDATE () { return this }

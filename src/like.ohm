@@ -15,11 +15,15 @@ Like {
     Pattern = 
         "(" Pattern ")"             --paran
         | ValuePattern
+        | DatumPattern
         | WildcardPattern
         | VariablePattern
         | ArrayPattern
 
     VariablePattern = ident
+
+    DatumPattern = 
+        ident "(" ListOf<ident,","> ")"
 
     ArrayPattern = 
         "[" ListOf<Pattern,","> ("," "..." Pattern)? "]" -- concrete
@@ -33,7 +37,7 @@ Like {
 
     DoBlock = doBlock
 
-    ident = ("_" | "$" | letter) alnum*
+    ident = ("_" | "$" | letter) ( "_" | "$" | alnum)*
     number = digit+ ("." digit+)?
     string = "\"" ("\\\"" | ~"\"" any)* "\""
     endOfDo = "|" | "}"

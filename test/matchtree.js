@@ -1,7 +1,7 @@
 "use strict";
 
 var matchtree = matchtree || require("../src/matchtree.js")
-var like = like || require("../dist/like-v1.0.0.js")
+var like = like || require('../src/like.js')
 
 var chai = chai || require('chai')
 var expect = chai.expect
@@ -120,10 +120,33 @@ describe("matchtree", () => {
               in_: { expr: "xs" }
             }  
           }
-
         }
       });
     });
+  });
+  it("should match a datum", () => {
+      var ast = parse(a => { 
+        Point ( x, y) >= x_
+      });
+      expect(matchtree.toMatchTree(ast)).to.be.eql({
+        first: [ 
+          { type: "Object", value: "a"},
+          { should: "\"Point\"", target: "a.constructor.name" },
+          { should: 2, target: "a.constructor.length" }
+        ],
+        then: { 
+          env: { _args: "_arguments(a)"},
+          in_: { 
+            env: { 
+              x: "_args[0]",
+              y: "_args[1]"
+            },
+            in_: { 
+              expr: "x_"
+            }
+          }
+        }
+      });
   });
 });
 

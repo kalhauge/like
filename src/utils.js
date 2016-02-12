@@ -10,7 +10,10 @@ function createMethod(functions, cls) {
     }
   });
   return function (node, ...args) { 
-    return dict[node.constructor].apply(node, args)
+    if (node.constructor in dict) 
+      return dict[node.constructor].apply(node, args)
+    else
+      throw "Functions not defined for " + node.constructor.name + "."
   }
 }
 exports.createMethod = createMethod;

@@ -9,6 +9,10 @@ var expect = chai.expect
 var compile = like.compile, parse = like.parse, translate = like.translate;
 var asts = like.ast;
 
+function pp(fn) {
+  return "\n" +  fn.toString() + "\n"
+}
+
 describe("compile", () => {
 
   it("can make a fib series", () => {
@@ -18,7 +22,7 @@ describe("compile", () => {
       | n >= fib(n - 1) + fib(n - 2)
     });
     function fib (n) { return fib_(n, fib); }
-    expect(fib(2)).to.equal(2);
+    expect(fib(2)).to.equal(2, pp(fib_));
     expect(fib(3)).to.equal(3);
     expect(fib(4)).to.equal(5);
   });
@@ -28,7 +32,7 @@ describe("compile", () => {
       | 1 >= 1
       | n >= rec(n - 1) + rec(n - 2)
     });
-    expect(fib(2)).to.equal(2);
+    expect(fib(2)).to.equal(2, pp(fib));
     expect(fib(3)).to.equal(3);
     expect(fib(4)).to.equal(5);
   });
@@ -38,7 +42,8 @@ describe("compile", () => {
       | []        , _          >= []
       | _         , []         >= []
     });
-    expect(zip([1,2], [3, 4], _)).to.eql([[1,3], [2,4]]);
+    console.log(pp(zip));
+    expect(zip([1,2], [3, 4], _)).to.eql([[1,3], [2,4]], pp(zip));
     expect(zip([1], [3, 4], _)).to.eql([[1,3]]);
     expect(zip([1, 2], [3], _)).to.eql([[1,3]]);
   });
@@ -68,10 +73,6 @@ describe("compile", () => {
   // });
 
 });
-
-function trans (fn) { 
-  return translate(parse(fn))
-}
 
 describe("parse", () => {
   it("should parse a simple match", () => {

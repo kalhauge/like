@@ -6,54 +6,54 @@ var utils = require('./utils.js');
 
 // A match tree has {}
 var tree = {
-  AND: function (first, then) {
+  AND: function AND (first, then) {
     this.first = first;
     this.then = then;
   },
 
-  OR: function (first, then) {
+  OR: function OR (first, then) {
     this.first = first;
     this.then = then;
   },
 
-  EQ: function (should, target) {
+  EQ: function EQ (should, target) {
     this.should = should;
     this.target = target;
   },
 
-  LTE: function (should, target) {
+  LTE: function LTE (should, target) {
     this.should = should;
     this.target = target;
   },
 
-  GTE: function (should, target) {
+  GTE: function GTE (should, target) {
     this.should = should;
     this.target = target;
   },
 
-  LET: function (name, is, in_) {
+  LET: function LET (name, is, in_) {
     this.name = name;
     this.is = is;
     this.in_ = in_;
   },
 
-  UPDATE: function (update) {
+  UPDATE: function UPDATE (update) {
     this.update = update;
   },
 
-  ALL: function (array, free, all, in_) {
+  ALL: function ALL (array, free, all, in_) {
     this.array = array;
     this.free = free;
     this.all = all;
     this.in_ = in_;
   },
 
-  INSTOF: function (value, type) {
+  INSTOF: function INSTOF (value, type) {
     this.value = value;
     this.type = type;
   },
 
-  OUTPUT: function (expr) {
+  OUTPUT: function OUTPUT (expr) {
     this.expr = expr;
   },
 }

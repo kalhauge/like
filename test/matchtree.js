@@ -1,3 +1,5 @@
+"use strict";
+
 var matchtree = matchtree || require("../src/matchtree.js")
 var like = like || require("../dist/like-v1.0.0.js")
 
@@ -6,7 +8,7 @@ var expect = chai.expect
 
 var parse = like.parse
 
-describe("matchtree", () => {
+xdescribe("matchtree", () => {
   it("should match a single args", () => {
     var ast = parse(a => { 
           1.1 >= 0 

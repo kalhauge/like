@@ -13,7 +13,8 @@ Like {
         ListOf<Pattern, ","> ">=" DoBlock 
 
     Pattern = 
-        ValuePattern
+        "(" Pattern ")"             --paran
+        | ValuePattern
         | WildcardPattern
         | VariablePattern
         | ArrayPattern

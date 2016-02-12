@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     pkg : grunt.file.readJSON("package.json"),
     watch: {
       files: ["src/**/*.js", "test/**/*.js", "src/**/*.ohm"],
-      tasks: ["exec:mocha"],
+      tasks: ["concat", "exec:mocha"],
       options: {
         spawn: false,
         livereload: true,

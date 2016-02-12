@@ -25,6 +25,7 @@ var sematics = g.semantics().addOperation("toAST", {
 
   Clause: (pattern, _arw, doBlock) => new ast.Clause(pattern.toAST(), doBlock.toAST()),
 
+  Pattern_paran: (_lp, x, _rp) => x.toAST(),
   ValuePattern: (x) => new ast.ValuePattern(x.toAST()),
   WildcardPattern: (_us) => new ast.WildcardPattern(),
   VariablePattern: ident => new ast.VariablePattern(ident.toAST()),

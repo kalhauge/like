@@ -13,7 +13,7 @@ Like {
         ListOf<Pattern, ","> ">=" DoBlock 
 
     Pattern = 
-        "(" Pattern ")"             --paran
+        "(" Pattern ")"             -- paran
         | ValuePattern
         | DatumPattern
         | WildcardPattern
@@ -27,7 +27,7 @@ Like {
 
     ArrayPattern = 
         "[" ListOf<Pattern,","> ("," "..." Pattern)? "]" -- concrete
-        | "[" "..." Pattern "]"                            -- many
+        | "[" "..." Pattern "]"                          -- many
 
     WildcardPattern = "_"
 

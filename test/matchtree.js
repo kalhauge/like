@@ -53,11 +53,8 @@ describe("matchtree", () => {
         [] >= 0 
       });
       expect(matchtree.toMatchTree(ast)).to.deep.equal({
-        first: [{ value : "a", type: "Array" }],
-        then : { 
-            first: [{ should: "a.length", target: 0 }],
-            then: { expr: "0" }
-        }
+        first: [{ value : "a", type: "Array" }, { should: "a.length", target: 0 }],
+        then: { expr: "0" }
       });
     });
     it("should match array with subpatterns", () => {
@@ -65,16 +62,13 @@ describe("matchtree", () => {
         [1, x] >= x
       });
       expect(matchtree.toMatchTree(ast)).to.deep.equal({
-        first: [{ value : "a", type: "Array" }],
-        then : {
-          first: [{ should: "a.length", target: 2 }],
+        first: [{ value : "a", type: "Array" }, { should: "a.length", target: 2 }],
           then: {
             first: [{ should: 1, target: "a[0]"}],
             then: { 
               env: {x: "a[1]"}, in_: {expr: "x"}
             }
           }
-        }
       });
     });
     it("should match array with rest", () => {
@@ -82,21 +76,18 @@ describe("matchtree", () => {
         [1, ...xs] >= xs
       });
       expect(matchtree.toMatchTree(ast)).to.deep.equal({
-        first: [{ value : "a", type: "Array" }],
-        then : {
-          first: [{ should: "a.length", target: 1 }],
-          then: {
-            first: [{ should: 1, target: "a[0]"}],
-            then: { 
-              free: ["xs"], 
-              array: "a.slice(1)",
-              all: { 
-                env: { xs: "_e" },
-                in_: { update: ["xs"] }
-              }, 
-              in_: { expr: "xs" }
-            }  
-          }
+        first: [{ value : "a", type: "Array" }, { should: "a.length", target: 1 }],
+        then: {
+          first: [{ should: 1, target: "a[0]"}],
+          then: { 
+            free: ["xs"], 
+            array: "a.slice(1)",
+            all: { 
+              env: { xs: "_e" },
+              in_: { update: ["xs"] }
+            }, 
+            in_: { expr: "xs" }
+          }  
         }
       });
     });
@@ -105,21 +96,18 @@ describe("matchtree", () => {
         [1, ...xs] >= xs
       });
       expect(matchtree.toMatchTree(ast)).to.deep.equal({
-        first: [{ value : "a", type: "Array" }],
-        then : { 
-          first: [{ should: "a.length", target: 1 }],
-          then: {
-            first: [{ should: 1, target: "a[0]"}],
-            then: { 
-              array: "a.slice(1)",
-              free: ["xs"], 
-              all: { 
-                env: { xs: "_e" },
-                in_: { update: ["xs"] }
-              }, 
-              in_: { expr: "xs" }
-            }  
-          }
+        first: [{ value : "a", type: "Array" }, { should: "a.length", target: 1 }],
+        then: {
+          first: [{ should: 1, target: "a[0]"}],
+          then: { 
+            array: "a.slice(1)",
+            free: ["xs"], 
+            all: { 
+              env: { xs: "_e" },
+              in_: { update: ["xs"] }
+            }, 
+            in_: { expr: "xs" }
+          }  
         }
       });
     });

@@ -29,6 +29,7 @@ var sematics = g.semantics().addOperation("toAST", {
   ValuePattern: (x) => new ast.ValuePattern(x.toAST()),
   WildcardPattern: (_us) => new ast.WildcardPattern(),
   VariablePattern: ident => new ast.VariablePattern(ident.toAST()),
+  
   ArrayPattern_concrete: (_ob, subpatterns, _c, _dots, rest, _cb) => {
     var restpattern = rest.toAST();
     return new ast.ArrayPattern(subpatterns.toAST(), _.isEmpty(restpattern) ? null : restpattern[0])
@@ -37,6 +38,13 @@ var sematics = g.semantics().addOperation("toAST", {
     var restpattern = rest.toAST();
     return new ast.ArrayPattern([], restpattern)
   },
+
+  ObjectPattern: (_op, attrs, _cp) => new ast.ObjectPattern(attrs.toAST()),
+  
+  AttrPattern: (key, _c, pattern) => {
+    return new ast.AttrPattern(key.toAST(), pattern.toAST());
+  },
+  
   DatumPattern: (name, _lp, args, _rp) => {
     return new ast.DatumPattern(name.toAST(), args.toAST()) 
   },

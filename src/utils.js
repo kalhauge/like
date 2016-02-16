@@ -1,5 +1,5 @@
 
-function createMethod(functions, cls) {
+function createMethod(functions, cls, name) {
   var dict = {}
   Object.getOwnPropertyNames(cls.prototype).forEach(fname => {
     if (fname === "constructor") return;
@@ -13,7 +13,8 @@ function createMethod(functions, cls) {
     if (node.constructor in dict) 
       return dict[node.constructor].apply(node, args)
     else
-      throw "Functions not defined for " + node.constructor.name + "."
+      name = name || "Unnamed function"
+      throw name + " not defined for " + node.constructor.name + "."
   }
 }
 exports.createMethod = createMethod;

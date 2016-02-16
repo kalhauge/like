@@ -17,6 +17,7 @@ function parse(fn) {
 var g = ohm.grammar(like_ohm);
 var sematics = g.semantics().addOperation("toAST", { 
   MatchObject: (args, _arw, content) => new ast.MatchObject(args.toAST(), content.toAST()),
+  Args_one : (variable) => [variable.toAST()],
   Args_many: (_lp, variables, _rp)   => variables.toAST(),
 
   ListOf_some: (m, _c1, ms) => [m.toAST()].concat(ms.toAST()),

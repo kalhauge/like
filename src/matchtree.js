@@ -96,15 +96,15 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
         new tree.INSTOF(arg, "Object"),
         new tree.EQ("\"" + this.name + "\"", arg + ".constructor.name"),
         new tree.EQ(this.args.length, arg + ".constructor.length")
-      ], 
+    ], 
+    new tree.LET(
+      {_args: "_arguments(" + arg + ")"}, 
       new tree.LET(
-        {_args: "_arguments(" + arg + ")"}, 
-        new tree.LET(
-          _.fromPairs(this.args.map((a, i) => [a, "_args[" + i + "]"]))
-          , next
-          )
+        _.fromPairs(this.args.map((a, i) => [a, "_args[" + i + "]"]))
+        , next
         )
-      );
+      )
+    );
   }
 
   ArrayPattern (arg, next) {
@@ -129,15 +129,25 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
         (acl, p, i) => toMatchTree(p, arg + "[" + (len - i - 1) +"]", acl),
         sub
     );
-    return and(
+    return new tree.AND([
         new tree.INSTOF(arg, "Array"),
-        and(
-          new tree.GTE(arg + ".length", this.subpatterns.length),
-          sub
-        )
-    )
+        new tree.GTE(arg + ".length", this.subpatterns.length)
+    ], sub)
   }
-});
+
+  ObjectPattern (arg, next) { 
+    let len = this.attrs.length;
+    return this.attrs.reverse().reduce(
+        (acl, p, i) => toMatchTree(p, arg, acl),
+        next
+      )
+  }
+
+  AttrPattern (arg, next) {
+    return toMatchTree(this.pattern, arg + "[\"" + this.key + "\"]", next)
+  }
+
+}, "translate");
 
 var free = utils.createMethod(ast, class { 
   MatchObject () { return _.uniq(_.flatten(this.clauses.map(c => c.free()))) }
@@ -153,7 +163,7 @@ var free = utils.createMethod(ast, class {
   }
   WildcardPattern () { return [] }
   AST() { throw this.constructor.name + " has no free" }
-});
+}, "free");
 
 
 

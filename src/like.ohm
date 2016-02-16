@@ -19,6 +19,7 @@ Like {
         | WildcardPattern
         | VariablePattern
         | ArrayPattern
+        | ObjectPattern
 
     VariablePattern = ident
 
@@ -28,6 +29,14 @@ Like {
     ArrayPattern = 
         "[" ListOf<Pattern,","> ("," "..." Pattern)? "]" -- concrete
         | "[" "..." Pattern "]"                          -- many
+
+    ObjectPattern = 
+        "{" ListOf<AttrPattern,","> "}"
+
+    AttrPattern = 
+        KeyPattern ":" Pattern 
+
+    KeyPattern = ident | string
 
     WildcardPattern = "_"
 

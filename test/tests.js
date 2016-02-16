@@ -100,6 +100,20 @@ describe("compile", () => {
     expect(getx(new Point(2, 3))).to.equal(2, pp(getx));
     expect(getx({x: 2, y:3})).to.equal(0, pp(getx));
   });
+  
+  it("matches partial objects", () => {
+    var getx = compile(a => {
+        ({x: x1}) >= x1 
+      | _ >= 0
+    });
+    function Point(x, y) {
+      this.x = x;
+      this.y = y;
+    };
+    expect(getx(new Point(2, 3))).to.equal(2, pp(getx));
+    expect(getx({x: 2, y:3})).to.equal(2, pp(getx));
+  });
+  
 
 });
 

@@ -68,4 +68,19 @@ ast.DatumPattern = class DatumPattern extends Pattern {
   }
 }
 
+ast.ObjectPattern = class ObjectPattern extends Pattern { 
+  constructor(attrs) {
+		super();
+		this.attrs = attrs;
+  }
+}
+
+ast.AttrPattern = class AttrPattern extends Pattern { 
+  constructor(key, pattern) {
+		super();
+		this.key = key;
+		this.pattern = pattern;
+  }
+}
+
 module.exports = ast;

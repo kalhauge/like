@@ -91,6 +91,26 @@ describe("parse", () => {
       .that.has.property("name", "x");
   });
 
+  it("should parse a datum", () => {
+    var ast = parse(a => {
+      Point(x_, y_) >= x_
+    });
+    var x = ast.clauses[0].pattern[0]
+    expect(x).to.be.instanceof(asts.DatumPattern);
+    expect(x).to.has.property("name", "Point");
+    expect(x).to.has.property("args").to.eql(["x_", "y_"]);
+  });
+
+  it("should parse an object", () => {
+    var ast = parse(a => {
+        ({x: _, y: x}), z >= x_
+    });
+    var x = ast.clauses[0].pattern[0]
+    expect(x).to.be.instanceof(asts.ObjectPattern);
+    expect(x).to.have.property("attrs").to.have.length(2);
+    expect(x.attrs[0]).to.be.instanceof(asts.AttrPattern);
+  });
+
   describe("using an array", () => {
     it("should parse the empty array", () => {
       var ast = parse((a) => { [] >= x })
@@ -132,15 +152,6 @@ describe("parse", () => {
         be.instanceof(asts.ValuePattern)
     });
 
-    it("should parse a datum", () => {
-      var ast = parse(a => {
-        Point(x_, y_) >= x_
-      });
-      var x = ast.clauses[0].pattern[0]
-      expect(x).to.be.instanceof(asts.DatumPattern);
-      expect(x).to.has.property("name", "Point");
-      expect(x).to.has.property("args").to.eql(["x_", "y_"]);
-    });
   });
 });
 

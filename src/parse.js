@@ -11,11 +11,11 @@ function parse(fn) {
   if (match.failed()) {
     throw match.message
   }
-  return sematics(match).toAST();
+  return semantics(match).toAST();
 }
 
 var g = ohm.grammar(like_ohm);
-var sematics = g.semantics().addOperation("toAST", { 
+var semantics = g.semantics().addOperation("toAST", { 
   MatchObject: (args, _arw, content) => new ast.MatchObject(args.toAST(), content.toAST()),
   Args_many: (_lp, variables, _rp)   => variables.toAST(),
 
@@ -59,4 +59,8 @@ var sematics = g.semantics().addOperation("toAST", {
   // EmptyListOf: () => [],
 });
 
-module.exports = parse
+module.exports = { 
+  parse: parse,
+  semantics: semantics,
+  grammar: g
+};

@@ -14,7 +14,7 @@ function getParameterNames(fn) {
 }
 
 exports.compile = function (fn) { 
-  var rec, ast = exports.parse(fn);
+  var rec, ast = exports.parse.parse(fn);
   var js = exports.translate(ast);
 
   var _arguments = function (a) {

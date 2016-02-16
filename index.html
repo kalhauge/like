@@ -11,6 +11,7 @@
     
     <script src="./node_modules/codemirror/lib/codemirror.js"></script>
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="./dist/like-v1.0.0.js"></script>
     <script src="./lib/playground.js"></script>
     <script src="./lib/lang.js"></script>
     <script src="./lib/helpers.js"></script>
@@ -19,7 +20,16 @@
         <script>
 insertPlayground(
     JS,
-    '6 * 7'
+    'var match = like.compile(a => { _ >= 1});\nmatch(1);'
+);
+        </script>
+
+        <hr style="margin: 100px 10px"/>
+
+        <script>
+insertPlayground(
+    LIKE,
+    'a => { _ >= 1}'
 );
         </script>
   </body>

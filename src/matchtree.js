@@ -20,6 +20,11 @@ var tree = {
     this.should = should;
     this.target = target;
   },
+  
+  NEQ: function NEQ (should, target) {
+    this.should = should;
+    this.target = target;
+  },
 
   LTE: function LTE (should, target) {
     this.should = should;
@@ -88,7 +93,12 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
 
   VariablePattern (arg, next) {
     var env = {}; env[this.name] = arg;
-    return new tree.LET(env, next);
+    return  new tree.LET(env, 
+        new tree.AND(
+          [new tree.NEQ(undefined, this.name)],
+          next
+        )
+    );
   }
 
   DatumPattern (arg, next) { 

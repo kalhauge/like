@@ -14,6 +14,7 @@ function translate(ast) {
 
 var transMTX = utils.createMethod(matchtree.tree, class { 
   EQ () { return this.target +  " === " +  this.should; }
+  NEQ () { return this.target +  " !== " +  this.should; }
   INSTOF () { return this.value + " instanceof " + this.type }
   GTE () { return this.should + " >= " + this.target }
 });

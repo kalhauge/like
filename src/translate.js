@@ -9,7 +9,7 @@ function translate(ast) {
   var tree = optimize(matchtree.toMatchTree(ast)); 
   return "function (" +  ast.args + ") {\n" + 
       transMT(tree, "  ") + 
-      "  throw 'MatchFailure: could not match ' + " ast.args.join(" + ', ' + ") + "'\n";
+      "  throw 'MatchFailure: could not match ' + " + ast.args.join(" + ', ' + ") + "'\n" + 
   "}";
 }
 

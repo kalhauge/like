@@ -45,7 +45,7 @@ Like <: ES5 {
 
     WildcardPattern = "_"
 
-    ValuePattern = literal
+    ValuePattern (a value pattern) = ~"..." literal
 
     identifier := ident
     

@@ -9,7 +9,7 @@ function parse(fn) {
   return like.parse.parse(fn.toString())
 }
 
-describe.only("parse", () => {
+describe("parse", () => {
   it("should parse a simple match", () => {
     var ast = parse((a) => (
       10 >= 2

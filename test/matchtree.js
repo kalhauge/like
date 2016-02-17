@@ -8,20 +8,20 @@ var expect = chai.expect
 
 var parse = like.parse
 
-describe("matchtree", () => {
+describe.skip("matchtree", () => {
   it("should match a single arg", () => {
-    var ast = parse(a => { 
+    var ast = parse(a => (
           1.1 >= 0 
-    })
+    ))
     expect(matchtree.toMatchTree(ast)).to.deep.equal({ 
       first: [{should: 1.1, target: "a"}],
       then: { expr: "0" }
     });
   });
   it("should match a wildcard", () => {
-    var ast = parse(a => { 
+    var ast = parse(a => (
           _ >= 0 
-    })
+    ))
     expect(matchtree.toMatchTree(ast)).to.deep.equal({ expr: "0" });
   });
   it("should match multible args", () => {

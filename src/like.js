@@ -19,13 +19,12 @@ exports.pprint = function (ast)  {
       "  let pnames = getParameterNames(a.constructor)\n" +
       "  return pnames.map(p => a[p]);\n" +
       "}\n" +
-      (ast.publicvars.length !== 0 ? "var " + ast.publicvars.map((v, i) => v + " = pv[" + i + "]").join(", ") + "\n" : "") + 
       "rec = " + js
   )
   return str;
 }
 exports.compile = function (fn) { 
   var ast = exports.parse.parse(fn);
-  var rec = null, _arguments = null, pv = ast.publicvars.length !== 0 ? fn() : []
+  var rec = null, _arguments = null;
   return eval(exports.pprint(ast));
 }

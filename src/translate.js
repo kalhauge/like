@@ -8,6 +8,8 @@ var matchtree = require("./matchtree.js");
 function translate(ast) {
   var tree = optimize(matchtree.toMatchTree(ast)); 
   return "function (" +  ast.args + ") {\n" + 
+      "  " + (ast.publicvars.length !== 0 ? "var pv = fn(), " +
+          ast.publicvars.map((v, i) => v + " = pv[" + i + "]").join(", ") + "\n" : "") + 
       transMT(tree, "  ") + 
       "  throw 'MatchFailure: could not match ' + " + ast.args.join(" + ', ' + ") + "\n" + 
   "}";

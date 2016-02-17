@@ -7,7 +7,6 @@ var matchtree = require("./matchtree.js");
 
 function translate(ast) {
   var tree = optimize(matchtree.toMatchTree(ast)); 
-  console.log(ast.args);
   return "function (" +  ast.args + ") {\n" + 
       transMT(tree, "  ") + 
       "  throw 'MatchFailure: could not match ' + " + ast.args.join(" + ', ' + ") + "\n" + 

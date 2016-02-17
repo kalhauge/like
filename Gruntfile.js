@@ -16,7 +16,8 @@ module.exports = function(grunt) {
       options: {
         process: function(src, filepath) {
           if ( filepath.substr(-3) === "ohm") {
-            return "module.exports = '" +  
+            return "module.exports." + filepath.match(/([^\/]*)\.ohm/)[1] 
+              + " = '" +  
               src.replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\r\n|\r|\n/g, "\\n") +
               "'\n";
           } else {
@@ -25,8 +26,8 @@ module.exports = function(grunt) {
         },
       },
       target : {
-        src: ["src/like.ohm"],
-        dest: "gen/like.ohm.js"
+        src: ["src/*.ohm"],
+        dest: "gen/langs.js"
       }
     },
     exec: {

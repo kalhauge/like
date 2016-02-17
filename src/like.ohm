@@ -1,13 +1,18 @@
-Like { 
+Like <: ES5 { 
+    Program := MatchObject
+
     MatchObject = 
-        Args "=>" Content
+        Args "=>" ( PublicVars  "||")? Content
 
     Args =
-        "(" + ListOf<ident,","> ")" -- many
-        | ident -- one
+        "(" + ListOf<identifier,","> ")" -- many
+        | identifier -- one
+    
+    PublicVars = 
+        "[" ListOf<identifier, ","> "]"
 
     Content = 
-        "{" ListOf<Clause, "|"> "}"
+        "(" ListOf<Clause, "|"> ")"
 
     Clause = 
         ListOf<Pattern, ","> ">=" DoBlock 
@@ -21,10 +26,10 @@ Like {
         | ArrayPattern
         | ObjectPattern
 
-    VariablePattern = ident
+    VariablePattern = identifier
 
     DatumPattern = 
-        ident "(" ListOf<ident,","> ")"
+        identifier "(" ListOf<identifier,","> ")"
 
     ArrayPattern = 
         "[" ListOf<Pattern,","> ("," "..." Pattern)? "]" -- concrete
@@ -36,20 +41,18 @@ Like {
     AttrPattern = 
         KeyPattern ":" Pattern 
 
-    KeyPattern = ident | string
+    KeyPattern = identifier | stringLiteral
 
     WildcardPattern = "_"
 
-    ValuePattern = 
-        number
-        | string
+    ValuePattern = literal
 
-    DoBlock = doBlock
+    identifier := ident
+    
+    ident = (letter | "$" | "_")  (letter | "$" | "_" | digit )*
 
-    ident = ("_" | "$" | letter) ( "_" | "$" | alnum)*
-    number = digit+ ("." digit+)?
-    string = "\"" ("\\\"" | ~"\"" any)* "\""
-    endOfDo = "|" | "}"
-    doBlock = (~endOfDo any)* 
+    DoBlock = EqualityExpression 
+
+    //ident = ("_" | "$" | letter) ( "_" | "$" | alnum)*
 }
 

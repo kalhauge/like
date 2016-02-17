@@ -12,15 +12,20 @@ function getParameterNames(fn) {
   var result = code.match(/\(([^)]*)\)/)[1].match(/([^\s,]+)/g);
   return result === null ? [] : result;
 }
-
-exports.compile = function (fn) { 
-  var rec, ast = exports.parse.parse(fn);
+exports.pprint = function (ast)  {
   var js = exports.translate(ast);
-
-  var _arguments = function (a) {
-    let pnames = getParameterNames(a.constructor) 
-    return pnames.map(p => a[p]);
-  }
-
-  return eval("rec = " + js);
+  var str = (
+      "_arguments = function (a) {\n" + 
+      "  let pnames = getParameterNames(a.constructor)\n" +
+      "  return pnames.map(p => a[p]);\n" +
+      "}\n" +
+      (ast.publicvars.length !== 0 ? "var " + ast.publicvars.map((v, i) => v + " = pv[" + i + "]").join(", ") + "\n" : "") + 
+      "rec = " + js
+  )
+  return str;
+}
+exports.compile = function (fn) { 
+  var ast = exports.parse.parse(fn);
+  var rec = null, _arguments = null, pv = ast.publicvars.length !== 0 ? fn() : []
+  return eval(exports.pprint(ast));
 }

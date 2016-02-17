@@ -2,7 +2,7 @@
 
 var ohm = require("ohm-js");
 var ast = require("./ast.js");
-var like_ohm = require("../gen/like.ohm.js");
+var langs = require("../gen/langs.js");
 var _ = require("lodash");
 
 function parse(fn) {
@@ -14,11 +14,17 @@ function parse(fn) {
   return semantics(match).toAST();
 }
 
-var g = ohm.grammar(like_ohm);
+var es5 = ohm.grammar(langs.es5)
+var g = ohm.grammar(langs.like, {ES5: es5});
+
 var semantics = g.semantics().addOperation("toAST", { 
-  MatchObject: (args, _arw, content) => new ast.MatchObject(args.toAST(), content.toAST()),
+  Program: a => a.toAST(),
+  MatchObject: (args, _arw, pubvars, _sep, content) => 
+      new ast.MatchObject(args.toAST(), pubvars.toAST(), content.toAST()),
   Args_one : (variable) => [variable.toAST()],
-  Args_many: (_lp, variables, _rp)   => variables.toAST(),
+  Args_many: (_lp, variables, _rp) => variables.toAST(),
+
+  PublicVars: (_lp, variables, _rp) => variables.toAST(),
 
   ListOf_some: (m, _c1, ms) => [m.toAST()].concat(ms.toAST()),
   ListOf_none: () => [],
@@ -50,12 +56,12 @@ var semantics = g.semantics().addOperation("toAST", {
     return new ast.DatumPattern(name.toAST(), args.toAST()) 
   },
 
-  number: function (numbers, s, numbers2) { return parseFloat(this.interval.contents)},
+  //number: function (numbers, s, numbers2) { return parseFloat(this.interval.contents)},
 
   DoBlock: function (code) { return this.interval.contents.replace(/^\s+|\s+$/g, '') },
-  ident: function (l, s) { return this.interval.contents },
-
-  string: function (_a, _b, _c) { return JSON.parse(this.interval.contents)},
+  identifier: function (a) { return this.interval.contents },
+  literal: function (_a) { return JSON.parse(this.interval.contents)},
+  stringLiteral : function (_a, b, c) { return JSON.parse(this.interval.contents)},
 
   // EmptyListOf: () => [],
 });

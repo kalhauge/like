@@ -11,9 +11,10 @@ ast.AST = class AST extends Object{
 var AST = ast.AST;
 
 ast.MatchObject = class MatchObject extends AST { 
-  constructor(args, clauses) {
+  constructor(args, publicvars, clauses) {
     super();
     this.args = args;
+    this.publicvars = publicvars;
     this.clauses = clauses;
   }
 }

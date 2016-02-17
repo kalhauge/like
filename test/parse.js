@@ -99,8 +99,8 @@ describe("parse", () => {
           ));
     var x = ast.clauses[0].pattern[0]
     expect(x).to.be.instanceof(asts.DatumPattern);
-    expect(x).to.has.property("name", "Point");
-    expect(x).to.has.property("args").to.eql(["x_", "y_"]);
+    expect(x).to.have.property("name", "Point");
+    expect(x).to.have.property("args");
   });
 
   it("should parse an object", () => {

@@ -29,7 +29,7 @@ Like <: ES5 {
     VariablePattern = identifier
 
     DatumPattern = 
-        identifier "(" ListOf<identifier,","> ")"
+        identifier "(" ListOf<Pattern,","> ")"
 
     ArrayPattern = 
         "[" ListOf<Pattern,","> ("," "..." Pattern)? "]" -- concrete

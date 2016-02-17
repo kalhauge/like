@@ -90,7 +90,7 @@ describe("compile", () => {
   
   it("matches datums", () => {
     var getx = compile(a => (
-        Point(x1, y1) >= x1 
+        Point(x1, 3) >= x1 
       | _ >= 0
     ));
     function Point(x, y) {

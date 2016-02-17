@@ -102,6 +102,7 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
   }
 
   DatumPattern (arg, next) { 
+    let len = this.args.length;
     return new tree.AND([
         new tree.INSTOF(arg, "Object"),
         new tree.EQ("\"" + this.name + "\"", arg + ".constructor.name"),
@@ -109,9 +110,9 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
     ], 
     new tree.LET(
       {_args: "_arguments(" + arg + ")"}, 
-      new tree.LET(
-        _.fromPairs(this.args.map((a, i) => [a, "_args[" + i + "]"]))
-        , next
+      this.args.reverse().reduce(
+        (acl, p, i) => toMatchTree(p, "_args[" + (len - i - 1) +"]", acl),
+        next
         )
       )
     );
@@ -150,7 +151,7 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
     return this.attrs.reverse().reduce(
         (acl, p, i) => toMatchTree(p, arg, acl),
         next
-      )
+    )
   }
 
   AttrPattern (arg, next) {
@@ -173,6 +174,9 @@ var free = utils.createMethod(ast, class {
   }
   WildcardPattern () { return [] }
   AST() { throw this.constructor.name + " has no free" }
+  ObjectPattern ()  { return _.flatten(this.attrs.map(free)) }
+  AttrPattern () { return free(this.pattern) }
+  DatumPattern () { return _.flatten(this.args.map(free)) }
 }, "free");
 
 

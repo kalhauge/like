@@ -114,6 +114,28 @@ describe("compile", () => {
     expect(getx({x: 2, y:3})).to.equal(2, pp(getx));
   });
   
+  it("full lists does not match empty", () => {
+    var getx = compile(a => (
+        [] >= true
+        | _ >= false
+    ));
+    expect(getx([1,2])).to.equal(false);
+    expect(getx([])).to.equal(true);
+  });
+  
+  it("empty args is allowed", () => {
+    var test = compile(() => (
+          [], x, y >= 1
+        | [], x, _ >= 2
+        | []       >= 3
+        | _        >= 4
+    ));
+    expect(test([], 1, 2)).to.equal(1);
+    expect(test([], 1)).to.equal(2);
+    expect(test([])).to.equal(3);
+    expect(test()).to.equal(4);
+  });
+  
 
 });
 

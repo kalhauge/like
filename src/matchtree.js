@@ -78,13 +78,13 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
   Clause (args) { 
     let len = this.pattern.length;
     return this.pattern.reverse().reduce(
-        (acl, p, i) => toMatchTree(p, args[len - i - 1], acl),
+        (acl, p, i) => toMatchTree(p, args[len - i - 1] || "arguments[" + (len - i - 1) + "]", acl),
         new tree.OUTPUT(this.doBlock)
         )
   }
 
   ValuePattern (arg, next) {
-    return and(new tree.EQ(this.value, arg), next);
+    return and(new tree.EQ(JSON.stringify(this.value), arg), next);
   }
 
   WildcardPattern (arg, next) {
@@ -121,9 +121,13 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
   ArrayPattern (arg, next) {
     var sub = next;
     let len = this.subpatterns.length;
+    var logic;
     
     if (this.restpattern) {
       let freevars = free(this.restpattern);
+      logic = ( len > 0 ?  
+        [new tree.GTE(arg + ".length", this.subpatterns.length)] : []
+      )
       sub = new tree.ALL( 
         len > 0 ? arg + ".slice(" + len + ")" : arg,
         freevars,
@@ -134,17 +138,15 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
         ),
         sub
       );
-    } 
+    } else {
+      logic = [new tree.EQ(arg + ".length", this.subpatterns.length)]
+    }
 
     sub = this.subpatterns.reverse().reduce(
         (acl, p, i) => toMatchTree(p, arg + "[" + (len - i - 1) +"]", acl),
         sub
     );
-    return new tree.AND([new tree.INSTOF(arg, "Array")].concat(
-      len > 0 ?  
-        [new tree.GTE(arg + ".length", this.subpatterns.length)] :
-        []
-    ), sub)
+    return new tree.AND([new tree.INSTOF(arg, "Array")].concat(logic), sub)
   }
 
   ObjectPattern (arg, next) { 

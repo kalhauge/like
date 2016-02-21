@@ -125,7 +125,7 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
     if (this.restpattern) {
       let freevars = free(this.restpattern);
       sub = new tree.ALL( 
-        arg + ".slice(" + len + ")",
+        len > 0 ? arg + ".slice(" + len + ")" : arg,
         freevars,
         toMatchTree(
           this.restpattern,
@@ -140,10 +140,11 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
         (acl, p, i) => toMatchTree(p, arg + "[" + (len - i - 1) +"]", acl),
         sub
     );
-    return new tree.AND([
-        new tree.INSTOF(arg, "Array"),
-        new tree.GTE(arg + ".length", this.subpatterns.length)
-    ], sub)
+    return new tree.AND([new tree.INSTOF(arg, "Array")].concat(
+      len > 0 ?  
+        [new tree.GTE(arg + ".length", this.subpatterns.length)] :
+        []
+    ), sub)
   }
 
   ObjectPattern (arg, next) { 

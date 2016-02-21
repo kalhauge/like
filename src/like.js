@@ -12,19 +12,17 @@ function getParameterNames(fn) {
   var result = code.match(/\(([^)]*)\)/)[1].match(/([^\s,]+)/g);
   return result === null ? [] : result;
 }
+
 exports.pprint = function (ast)  {
   var js = exports.translate(ast);
-  var str = (
-      "_arguments = function (a) {\n" + 
-      "  let pnames = getParameterNames(a.constructor)\n" +
-      "  return pnames.map(p => a[p]);\n" +
-      "}\n" +
-      "rec = " + js
-  )
+  var str = "rec = " + js
   return str;
 }
 exports.compile = function (fn) { 
   var ast = exports.parse.parse(fn);
-  var rec = null, _arguments = null;
+  var rec = null, _arguments = function (a) { 
+    let pnames = getParameterNames(a.constructor)
+    return pnames.map(p => a[p]);
+  }
   return eval(exports.pprint(ast));
 }

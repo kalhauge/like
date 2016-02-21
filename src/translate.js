@@ -48,18 +48,19 @@ var transMT = utils.createMethod(matchtree.tree, class {
     var inner = 
       indent + "if (" + this.array + ".every(_e => {\n" + 
         transMT(this.all, indent + "  ") + 
-      indent + "  return false;\n" + 
+//      indent + "  return false;\n" + 
       indent + "})) {\n";
 
     if (_.isEmpty(this.free)) {
       return inner + transMT(this.in_, indent + "  ") + indent + "}\n";
     } else {
-      return indent + 
-          "let " + this.free.map(x => "_" + x + " = []").join(", ") + ";\n" +
-        inner +
-        indent + "  let " + this.free.map(x => x + " = _" + x).join(", ") + ";\n" + 
-        transMT(this.in_, indent + "  ") 
-        + indent + "}\n";
+      return (
+        indent +    "let " + this.free.map(x => "_" + x + " = []").join(", ") + ";\n" +
+                    inner +
+        indent +   "  let " + this.free.map(x => x + " = _" + x).join(", ") + ";\n" + 
+                   transMT(this.in_, indent + "  ") +
+        indent +   "}\n";
+      )
     }
   }
 

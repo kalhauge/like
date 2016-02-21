@@ -8,10 +8,10 @@ var matchtree = require("./matchtree.js");
 function translate(ast) {
   var tree = optimize(matchtree.toMatchTree(ast)); 
   return "function (" +  ast.args + ") {\n" + 
-      "  " + (ast.publicvars.length !== 0 ? "var pv = fn(), " +
+      (ast.publicvars.length !== 0 ? "  var pv = fn(), " +
           ast.publicvars.map((v, i) => v + " = pv[" + i + "]").join(", ") + "\n" : "") + 
       transMT(tree, "  ") + 
-      "  throw 'MatchFailure: could not match ' + " + ast.args.join(" + ', ' + ") + "\n" + 
+      "  throw 'MatchFailure: could not match ' + " + ast.args.map(e => "JSON.stringify(" + e + ")").join(" + ', ' + ") + "\n" + 
   "}";
 }
 
@@ -45,30 +45,28 @@ var transMT = utils.createMethod(matchtree.tree, class {
 
 
   ALL (indent) {
-    var inner = 
-      indent + "if (" + this.array + ".every(_e => {\n" + 
+    var str = 
+      indent + "var _vars = " + this.array + ".map(_e => {\n" + 
         transMT(this.all, indent + "  ") + 
 //      indent + "  return false;\n" + 
-      indent + "})) {\n";
+      indent + "});\n" +
+      indent + "if (_vars.every(_e => { return _e })) {\n";
+    if (! _.isEmpty(this.free)) {
+      str += (
+          indent + "  let " + this.free.map(x => x + " = []").join(", ") + ";\n" +
+          indent + "  _vars.forEach(_e => {" + this.free.map((x, i) => x + ".push(_e[" + i + "]);").join(" ") + "});\n"
+          )
+    } 
 
-    if (_.isEmpty(this.free)) {
-      return inner + transMT(this.in_, indent + "  ") + indent + "}\n";
-    } else {
-      return (
-        indent +    "let " + this.free.map(x => "_" + x + " = []").join(", ") + ";\n" +
-                    inner +
-        indent +   "  let " + this.free.map(x => x + " = _" + x).join(", ") + ";\n" + 
-                   transMT(this.in_, indent + "  ") +
-        indent +   "}\n";
-      )
-    }
+    return (
+        str + 
+        transMT(this.in_, indent + "  ") + 
+        indent + "}\n"
+        )
   }
 
   UPDATE (indent) {
-    return this.update.map(u => 
-        indent + "_" + u + ".push(" + u + ");\n"
-        ).join("")
-      + indent + "return true;\n";
+    return indent + "return [" + this.update.join(", ") +  "];\n";
   }
 
   OUTPUT (indent) { 

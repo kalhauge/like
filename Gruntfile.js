@@ -67,4 +67,5 @@ module.exports = function(grunt) {
 
   grunt.registerTask("default", ["concat", "browserify"]);
   grunt.registerTask("develop", ["default", "exec:refresh_browser"])
+  grunt.registerTask("test",    ["exec:mocha"])
 };

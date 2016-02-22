@@ -93,11 +93,9 @@ var toMatchTree = exports.toMatchTree = utils.createMethod(ast, class {
 
   VariablePattern (arg, next) {
     var env = {}; env[this.name] = arg;
-    return  new tree.LET(env, 
-        new tree.AND(
-          [new tree.NEQ(undefined, this.name)],
-          next
-        )
+    return new tree.AND(
+      [new tree.NEQ(undefined, arg)],
+      new tree.LET(env, next)
     );
   }
 

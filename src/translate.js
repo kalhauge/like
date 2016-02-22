@@ -6,7 +6,7 @@ var utils = require('./utils.js');
 var matchtree = require("./matchtree.js");
 
 function translate(ast) {
-  var tree = (matchtree.toMatchTree(ast)); 
+  var tree = optimize(matchtree.toMatchTree(ast)); 
   return "function (" +  ast.args + ") {\n" + 
       (ast.publicvars.length !== 0 ? "  var pv = fn(), " +
           ast.publicvars.map((v, i) => v + " = pv[" + i + "]").join(", ") + "\n" : "") + 
@@ -26,10 +26,22 @@ var transMTX = utils.createMethod(matchtree.tree, class {
   GTE () { return this.should + " >= " + this.target }
 });
 
+function incapsulate(mt, indent) { 
+  if (mt instanceof tt.LET) {
+    return ( 
+      indent + "if (true) {\n" + 
+      transMT(mt, indent + "  ")  +
+      indent + "}\n"
+    )
+  } else {
+    return transMT(mt, indent);
+  }
+}
+
 var transMT = utils.createMethod(matchtree.tree, class {
 
   OR (indent) {
-    return transMT(this.first, indent) + transMT(this.then, indent);
+    return incapsulate(this.first, indent) + incapsulate(this.then, indent)
   }
   
   AND (indent) {
@@ -46,7 +58,6 @@ var transMT = utils.createMethod(matchtree.tree, class {
           map(n => n + " = " + this.env[n], this).join(", ") +
         ";\n" + transMT(this.in_, indent); 
   }
-
 
   ALL (indent) {
     var str = 
@@ -87,8 +98,8 @@ function sharedPrefix(as, bs) {
 var tt = matchtree.tree; 
 var optimize = utils.createMethod(matchtree.tree, class {
   OR () { 
-    var then = optimize(this.then)
     var first = optimize(this.first)
+    var then = optimize(this.then)
     if (then instanceof tt.AND && first instanceof tt.AND) { 
       var prefix = sharedPrefix(first.first, then.first);
       var len = prefix.length;
@@ -101,7 +112,11 @@ var optimize = utils.createMethod(matchtree.tree, class {
           )
         )
       }
-    } 
+    } else if (then instanceof tt.LET && first instanceof tt.LET) { 
+      if (_.isEqual(then.env, first.env)) {
+        return optimize(new tt.LET(then.env, new tt.OR(first.in_, then.in_)))
+      }
+    }
     return new matchtree.tree.OR(first, then)
   }
   AND () {

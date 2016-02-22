@@ -10,11 +10,13 @@ function createMethod(functions, cls, name) {
     }
   });
   return function (node, ...args) { 
-    if (node.constructor in dict) 
+    if (node && node.constructor in dict) 
       return dict[node.constructor].apply(node, args)
-    else
+    else {
       name = name || "Unnamed function"
+      var cname = (node && node.constructor.name)
       throw name + " not defined for " + node.constructor.name + "."
+    }
   }
 }
 exports.createMethod = createMethod;

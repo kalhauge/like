@@ -135,6 +135,34 @@ describe("compile", () => {
     expect(test([])).to.equal(3);
     expect(test()).to.equal(4);
   });
+
+  it("should be able to make a server", () => {
+    function OK(data) {
+      return { status: 200, data: data }
+    }
+
+    var server = { 
+      x: 0,
+      post: function(x) {
+        this.x = x;
+        return OK(this.x);
+      },
+      get: function () {
+        return OK(this.x);
+      },
+    }
+
+    var dispatch = like.compile(msg => [server] || (
+          { method: "POST", data: x} >= server.post(x)
+        | { method: "GET"}           >= server.get()
+    ))
+
+    dispatch({method: "POST", data: 1})
+    expect(server.x).to.be.equal(1);
+    
+    dispatch({method: "POST", data: 10})
+    expect(dispatch({method: "GET"})).to.have.property("data", 10)
+  });
   
 
 });

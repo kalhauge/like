@@ -19,8 +19,11 @@ var g = ohm.grammar(langs.like, {ES5: es5});
 
 var semantics = g.semantics().addOperation("toAST", { 
   Program: a => a.toAST(),
-  MatchObject: (args, _arw, pubvars, _sep, content) => 
-      new ast.MatchObject(args.toAST(), pubvars.toAST(), content.toAST()),
+  MatchObject: (args, _arw, pubvars, _sep, content) => {
+    let pv = pubvars.toAST();
+    if (pv.length > 0) pv = pv[0];
+    return new ast.MatchObject(args.toAST(), pv, content.toAST())
+  },
   Args_one : (variable) => [variable.toAST()],
   Args_many: (_lp, variables, _rp) => variables.toAST(),
 

@@ -163,6 +163,20 @@ describe("compile", () => {
     dispatch({method: "POST", data: 10})
     expect(dispatch({method: "GET"})).to.have.property("data", 10)
   });
+
+  it("support global scoping", () => { 
+    var a = 1, b = 2; 
+
+    var opr = like.compile(msg => [a, b] || (
+        "add" >= a + b
+      | "mult" >= a * b
+    ));
+    
+    expect(opr("add")).to.be.equal(3);
+    b = 4
+    expect(opr("mult")).to.be.equal(4);
+
+  });
   
 
 });
